@@ -15,11 +15,11 @@ export default async function MapPage() {
       <section className="hero">
         <h1>Карта айыла</h1>
         <p>
-          Здесь показаны важные места нашего айыла на настоящей карте.
+          Здесь показаны важные места нашего айыла на карте.
         </p>
       </section>
 
-      <section className="card" style={{ marginBottom: 20 }}>
+      <section className="card map-card" style={{ marginBottom: 20 }}>
         {error && <p className="status-error">{error.message}</p>}
         <VillageMap points={points ?? []} />
       </section>
