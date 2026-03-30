@@ -332,3 +332,70 @@ button:hover {
   flex-wrap: wrap;
   margin-top: 4px;
 }
+.site-menu {
+  margin-left: auto;
+}
+
+.menu-toggle {
+  display: none;
+  border: none;
+  background: #2563eb;
+  color: white;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.site-nav-wrap {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.site-nav-wrap a {
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #1e3a8a;
+  font-size: 14px;
+  transition: 0.2s ease;
+}
+
+.site-nav-wrap a:hover {
+  background: #dbeafe;
+}
+
+.site-nav-logout button {
+  padding: 10px 14px;
+  border-radius: 999px;
+}
+
+@media (max-width: 768px) {
+  .site-header {
+    position: static;
+  }
+
+  .menu-toggle {
+    display: inline-block;
+  }
+
+  .site-nav-wrap {
+    display: none;
+    width: 100%;
+    margin-top: 12px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .site-nav-wrap.open {
+    display: flex;
+  }
+
+  .site-nav-wrap a,
+  .site-nav-logout button {
+    width: 100%;
+    text-align: center;
+  }
+}

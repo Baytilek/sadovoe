@@ -12,10 +12,12 @@ export default function AddArticlePage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
+
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
-  const [imageUrl, setImageUrl] = useState('')
   const [status, setStatus] = useState('draft')
+  const [imageFile, setImageFile] = useState<File | null>(null)
+
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
 
@@ -59,10 +61,38 @@ export default function AddArticlePage() {
       return
     }
 
+    let imageUrl: string | null = null
+    let imagePath: string | null = null
+
+    if (imageFile) {
+      const ext = imageFile.name.split('.').pop()?.toLowerCase() || 'jpg'
+      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+      const path = `public/${fileName}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('articles')
+        .upload(path, imageFile, {
+          cacheControl: '3600',
+          upsert: false,
+          contentType: imageFile.type,
+        })
+
+      if (uploadError) {
+        setError(uploadError.message)
+        setSaving(false)
+        return
+      }
+
+      const { data } = supabase.storage.from('articles').getPublicUrl(path)
+      imageUrl = data.publicUrl
+      imagePath = path
+    }
+
     const { error } = await supabase.from('articles').insert({
       title,
       content,
-      image_url: imageUrl || null,
+      image_url: imageUrl,
+      image_path: imagePath,
       status,
       author_id: user.id,
     })
@@ -77,8 +107,8 @@ export default function AddArticlePage() {
     setMessage('Статья успешно добавлена.')
     setTitle('')
     setContent('')
-    setImageUrl('')
     setStatus('draft')
+    setImageFile(null)
     router.refresh()
   }
 
@@ -99,7 +129,7 @@ export default function AddArticlePage() {
     <>
       <section className="hero">
         <h1>Добавить статью</h1>
-        <p>Заполни форму ниже, чтобы создать новую новость или публикацию для сайта айыла.</p>
+        <p>Заполни форму ниже, чтобы создать новую новость или публикацию.</p>
       </section>
 
       <section className="card form-card">
@@ -129,10 +159,9 @@ export default function AddArticlePage() {
 
           <input
             className="input"
-            type="text"
-            placeholder="Ссылка на изображение"
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            onChange={(e) => setImageFile(e.target.files?.[0] || null)}
           />
 
           <select

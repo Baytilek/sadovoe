@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import './globals.css'
 import { createClient } from '@/lib/supabase/server'
-import LogoutButton from '@/components/LogoutButton'
+import SiteMenu from '@/components/SiteMenu'
 
 export const metadata: Metadata = {
   title: 'Сайт айыла',
@@ -42,28 +42,10 @@ export default async function RootLayout({
                 Сайт айыла
               </Link>
 
-              <nav className="site-nav">
-                <Link href="/">Главная</Link>
-                <Link href="/news">Новости</Link>
-                <Link href="/history">История</Link>
-                <Link href="/residents">Жители</Link>
-                <Link href="/map">Карта</Link>
-                <Link href="/creators">Создатели</Link>
-
-                {!user ? (
-                  <>
-                    <Link href="/login">Вход</Link>
-                    <Link href="/register">Регистрация</Link>
-                  </>
-                ) : (
-                  <>
-                    <Link href="/profile">Профиль</Link>
-                    {profile?.role === 'admin' && <Link href="/admin">Админка</Link>}
-                  </>
-                )}
-              </nav>
-
-              {user && <LogoutButton />}
+              <SiteMenu
+                isLoggedIn={!!user}
+                isAdmin={profile?.role === 'admin'}
+              />
             </div>
           </header>
 
