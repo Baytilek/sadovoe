@@ -8,10 +8,13 @@ export default function ProfilePage() {
   const supabase = useMemo(() => createClient(), [])
 
   const [loading, setLoading] = useState(true)
+  const [userId, setUserId] = useState('')
   const [userEmail, setUserEmail] = useState('')
   const [fullName, setFullName] = useState('')
   const [avatarUrl, setAvatarUrl] = useState('')
+  const [avatarPath, setAvatarPath] = useState('')
   const [role, setRole] = useState('user')
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
 
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
@@ -30,11 +33,12 @@ export default function ProfilePage() {
         return
       }
 
+      setUserId(user.id)
       setUserEmail(user.email || '')
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('full_name, avatar_url, role')
+        .select('full_name, avatar_url, avatar_path, role')
         .eq('id', user.id)
         .single()
 
@@ -43,6 +47,7 @@ export default function ProfilePage() {
       } else if (data) {
         setFullName(data.full_name || '')
         setAvatarUrl(data.avatar_url || '')
+        setAvatarPath(data.avatar_path || '')
         setRole(data.role || 'user')
       }
 
@@ -68,22 +73,59 @@ export default function ProfilePage() {
       return
     }
 
-    const { error } = await supabase
+    let nextAvatarUrl = avatarUrl || null
+    let nextAvatarPath = avatarPath || null
+
+    if (avatarFile) {
+      const ext = avatarFile.name.split('.').pop()?.toLowerCase() || 'jpg'
+      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+      const path = `${user.id}/${fileName}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(path, avatarFile, {
+          cacheControl: '3600',
+          upsert: false,
+          contentType: avatarFile.type,
+        })
+
+      if (uploadError) {
+        setError(uploadError.message)
+        setSaving(false)
+        return
+      }
+
+      const { data } = supabase.storage.from('avatars').getPublicUrl(path)
+      nextAvatarUrl = data.publicUrl
+      nextAvatarPath = path
+    }
+
+    const oldAvatarPath = avatarPath
+
+    const { error: updateError } = await supabase
       .from('profiles')
       .update({
         full_name: fullName,
-        avatar_url: avatarUrl || null,
+        avatar_url: nextAvatarUrl,
+        avatar_path: nextAvatarPath,
       })
       .eq('id', user.id)
 
-    setSaving(false)
-
-    if (error) {
-      setError(error.message)
+    if (updateError) {
+      setError(updateError.message)
+      setSaving(false)
       return
     }
 
+    if (avatarFile && oldAvatarPath) {
+      await supabase.storage.from('avatars').remove([oldAvatarPath])
+    }
+
+    setAvatarUrl(nextAvatarUrl || '')
+    setAvatarPath(nextAvatarPath || '')
+    setAvatarFile(null)
     setMessage('Профиль обновлен.')
+    setSaving(false)
   }
 
   if (loading) {
@@ -107,7 +149,7 @@ export default function ProfilePage() {
     <>
       <section className="hero">
         <h1>Профиль пользователя</h1>
-        <p>Здесь можно изменить имя и ссылку на аватар.</p>
+        <p>Здесь можно изменить имя и загрузить аватарку файлом.</p>
       </section>
 
       <section className="card form-card">
@@ -135,10 +177,9 @@ export default function ProfilePage() {
 
           <input
             className="input"
-            type="text"
-            placeholder="Ссылка на аватар"
-            value={avatarUrl}
-            onChange={(e) => setAvatarUrl(e.target.value)}
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            onChange={(e) => setAvatarFile(e.target.files?.[0] || null)}
           />
 
           <div className="form-actions">
