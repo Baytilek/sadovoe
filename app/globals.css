@@ -399,3 +399,48 @@ button:hover {
     text-align: center;
   }
 }
+.comments-box {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.comments-list {
+  display: grid;
+  gap: 12px;
+  margin: 14px 0;
+}
+
+.comment-item {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.comment-meta {
+  color: #6b7280;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.comment-text {
+  margin: 0;
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+.comment-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}

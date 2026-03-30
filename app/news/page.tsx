@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import ArticleComments from '@/components/ArticleComments'
 
 export default async function NewsPage() {
   const supabase = await createClient()
@@ -53,6 +54,7 @@ export default async function NewsPage() {
               <p style={{ whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
                 {article.content}
               </p>
+              <ArticleComments articleId={article.id} />
             </article>
           ))
         )}
