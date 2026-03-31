@@ -39,7 +39,7 @@ export default async function RootLayout({
           <header className="site-header">
             <div className="site-header-inner">
               <Link href="/" className="site-logo">
-                Сайт айыла
+                Sadovoe
               </Link>
 
               <SiteMenu
