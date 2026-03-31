@@ -5,8 +5,8 @@ import { createClient } from '@/lib/supabase/server'
 import SiteMenu from '@/components/SiteMenu'
 
 export const metadata: Metadata = {
-  title: 'Сайт айыла',
-  description: 'Информационный сайт айыла',
+  title: 'Sadovoe',
+  description: 'Информационный сайт ',
 }
 
 export default async function RootLayout({
