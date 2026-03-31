@@ -21,7 +21,8 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
-    async function loadProfile() {
+  async function loadProfile() {
+    try {
       setError('')
 
       const {
@@ -50,12 +51,15 @@ export default function ProfilePage() {
         setAvatarPath(data.avatar_path || '')
         setRole(data.role || 'user')
       }
-
+    } catch (err) {
+      setError('Не удалось загрузить профиль.')
+    } finally {
       setLoading(false)
     }
+  }
 
-    loadProfile()
-  }, [supabase])
+  loadProfile()
+}, [supabase])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
