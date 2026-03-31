@@ -51,8 +51,8 @@ export default async function AdminPage() {
             Добавить статью
           </Link>
           <Link href="/admin/articles" className="news-item">
-  Управление статьями
-</Link>
+           Управление статьями
+          </Link>
 
           <Link href="/admin/history" className="news-item">
             Управление историей
